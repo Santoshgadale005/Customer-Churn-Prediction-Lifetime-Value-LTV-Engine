@@ -12,3 +12,5 @@ matplotlib
 seaborn
 plotly
 pytest
+imbalanced-learn
+joblib

@@ -2,15 +2,16 @@
 
 ## Phase 1: Foundation & Data Engineering (Week 1)
 - [x] **Day 1: Environment Setup & Project Initialization**
-- [ ] **Day 2: Database Schema & Data Ingestion**
+- [x] **Day 2: Database Schema & Data Ingestion**
     - Setup PostgreSQL tables
     - Script to load raw data into SQL
-- [ ] **Day 3: Exploratory Data Analysis (EDA)**
+- [x] **Day 3: Exploratory Data Analysis (EDA)**
     - Identify churn patterns
     - Correlation analysis
-- [ ] **Day 4: Feature Engineering (Part 1)**
-    - Handling missing values
+- [x] **Day 4: Data Preprocessing & Feature Engineering**
     - Encoding categorical variables
+    - Scaling numerical features
+    - Train/test split & Handling Imbalance
 - [ ] **Day 5: Feature Engineering (Part 2)**
     - Creating LTV-specific features (Tenure, Avg Monthly Charges)
 
