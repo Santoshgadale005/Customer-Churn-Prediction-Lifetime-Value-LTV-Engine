@@ -24,7 +24,6 @@ share/python-wheels/
 MANIFEST
 
 # Data
-data/*
 !data/.gitkeep
 
 # Environment variables
