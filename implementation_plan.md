@@ -12,11 +12,10 @@
     - Encoding categorical variables
     - Scaling numerical features
     - Train/test split & Handling Imbalance
-- [ ] **Day 5: Feature Engineering (Part 2)**
-    - Creating LTV-specific features (Tenure, Avg Monthly Charges)
+- [x] **Day 5: Logistic Regression (Baseline Model)**
 
 ## Phase 2: Machine Learning & Modeling (Week 2)
-- [ ] **Day 1: Churn Model Baseline (Logistic Regression)**
+- [x] **Day 1: Churn Model Baseline (Logistic Regression)**
 - [ ] **Day 2: Advanced Churn Models (Random Forest & XGBoost)**
 - [ ] **Day 3: LTV Regression Models**
 - [ ] **Day 4: Hyperparameter Tuning**
