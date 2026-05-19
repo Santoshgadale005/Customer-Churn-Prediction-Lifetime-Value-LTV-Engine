@@ -25,3 +25,60 @@ This project is a production-level predictive analytics platform designed for te
 1. Create a virtual environment: `python3 -m venv venv`
 2. Activate venv: `source venv/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
+# Customer Churn Prediction & Lifetime Value (LTV) Engine
+
+A Machine Learning powered web application that predicts customer churn and estimates customer lifetime value using FastAPI and Streamlit.
+
+## 🚀 Features
+
+- Predict customer churn
+- Estimate customer lifetime value (LTV)
+- Interactive Streamlit dashboard
+- FastAPI backend API
+- Machine Learning integration
+- Clean project structure
+- Real-time prediction system
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- Streamlit
+
+### Backend
+- FastAPI
+- Uvicorn
+
+### Machine Learning
+- Scikit-learn
+- Pandas
+- NumPy
+
+### Visualization
+- Matplotlib
+- Seaborn
+
+---
+
+## 📂 Project Structure
+
+```bash
+Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
+│
+├── app/
+│   ├── api/
+│   ├── database/
+│   ├── models/
+│   ├── services/
+│   ├── __init__.py
+│   └── main.py
+│
+├── data/
+├── models/
+├── notebooks/
+├── reports/
+├── scripts/
+├── streamlit_app.py
+├── requirements.txt
+└── README.md
