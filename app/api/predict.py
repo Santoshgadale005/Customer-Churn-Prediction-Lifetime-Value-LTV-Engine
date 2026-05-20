@@ -8,7 +8,8 @@ Provides endpoints for:
   - Global feature importance
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 import joblib
 import shap
 import numpy as np
@@ -29,6 +30,8 @@ from app.services.preprocessing import (
     get_risk_level,
     MODEL_FEATURE_COLUMNS,
 )
+from app.database.db_dependency import get_db
+from app.services.prediction_service import predict_churn as service_predict_churn
 
 router = APIRouter(prefix="/predict", tags=["Predictions"])
 
@@ -63,20 +66,18 @@ def _check_model():
     response_model=PredictionResponse,
     summary="Predict churn for a single customer",
 )
-def predict_churn(customer: CustomerData):
+def predict_churn(customer: CustomerData, db: Session = Depends(get_db)):
     """
     Accepts a single customer's raw data and returns a churn prediction
-    with probability and risk level.
+    with probability and risk level. Logs the prediction to the database.
     """
     _check_model()
 
-    # Preprocess
-    features = preprocess_customer(customer.model_dump())
-
-    # Predict
-    prediction = int(model.predict(features)[0])
-    probability = float(model.predict_proba(features)[0][1])
-    risk = get_risk_level(probability)
+    # Predict and log using the service
+    result = service_predict_churn(customer.model_dump(), db)
+    prediction = result["prediction"]
+    probability = result["churn_probability"]
+    risk = result["risk_level"]
 
     message = (
         f"Customer is {'likely' if prediction == 1 else 'unlikely'} to churn. "
