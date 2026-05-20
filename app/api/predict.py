@@ -9,6 +9,7 @@ Provides endpoints for:
 """
 
 from fastapi import APIRouter, HTTPException
+from logger import log_prediction
 import joblib
 import shap
 import numpy as np
@@ -74,6 +75,7 @@ def predict_churn(customer: CustomerData):
     features = preprocess_customer(customer.model_dump())
 
     # Predict
+    prediction = model.predict(...)
     prediction = int(model.predict(features)[0])
     probability = float(model.predict_proba(features)[0][1])
     risk = get_risk_level(probability)
@@ -221,8 +223,9 @@ def get_feature_importance():
         key=lambda x: x.importance,
         reverse=True,
     )
-
+    log_prediction("Prediction completed successfully")
     return FeatureImportanceResponse(
         features=feature_list,
         model_type="XGBoost",
     )
+    
