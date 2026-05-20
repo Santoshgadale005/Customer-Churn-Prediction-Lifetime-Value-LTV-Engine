@@ -82,3 +82,13 @@ Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
 ├── streamlit_app.py
 ├── requirements.txt
 └── README.md
+# Screenshots
+
+## API Documentation
+![API Docs](assets/screenshots/api_docs.png)
+
+## SHAP Explainability
+![SHAP](assets/screenshots/shap_summary_plot.png)
+
+## Project Structure
+![Structure](assets/screenshots/project_structure.png)
