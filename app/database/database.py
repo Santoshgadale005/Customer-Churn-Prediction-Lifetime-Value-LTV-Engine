@@ -5,9 +5,12 @@ from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
-DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD', '')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+DATABASE_URL = (
+    "postgresql://postgres:your_password"
+    "@postgres:5432/churn_ltv_db"
+)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(

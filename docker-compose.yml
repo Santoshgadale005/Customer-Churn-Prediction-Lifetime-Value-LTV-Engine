@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  api:
+    build: .
+    container_name: churn_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:15
+    container_name: churn_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: churn_ltv_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  metabase:
+    image: metabase/metabase
+    container_name: churn_dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
