@@ -82,13 +82,48 @@ Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
 ├── streamlit_app.py
 ├── requirements.txt
 └── README.md
-# Screenshots
+## Features
 
-## API Documentation
-![API Docs](assets/screenshots/api_docs.png)
+- Customer Lifetime Value Prediction
+- Machine Learning Pipeline
+- SHAP Explainability
+- PostgreSQL Integration
+- Dockerized Deployment
+- GitHub Actions CI/CD
+- REST API Support
+- Production Logging
 
-## SHAP Explainability
-![SHAP](assets/screenshots/shap_summary_plot.png)
+---
 
-## Project Structure
-![Structure](assets/screenshots/project_structure.png)
+## Tech Stack
+
+- Python
+- FastAPI
+- Scikit-learn
+- PostgreSQL
+- Docker
+- GitHub Actions
+- SHAP
+- Pandas & NumPy
+
+---
+
+## Project Screenshots
+
+### Dashboard
+![Dashboard](assets/screenshots/dashboard.png)
+
+### Prediction Page
+![Prediction](assets/screenshots/prediction_page.png)
+
+### Prediction Result
+![Result](assets/screenshots/prediction_result.png)
+
+### SHAP Analysis
+![SHAP](assets/screenshots/shap_analysis.png)
+
+### Docker Setup
+![Docker](assets/screenshots/docker_setup.png)
+
+### GitHub Actions
+![Actions](assets/screenshots/github_actions.png)
