@@ -16,3 +16,6 @@ class PredictionLog(Base):
     total_charges = Column(Float)
     prediction = Column(Integer)
     churn_probability = Column(Float)
+    predicted_ltv = Column(Float)
+    customer_segment = Column(String)
+    recommendation = Column(String)
