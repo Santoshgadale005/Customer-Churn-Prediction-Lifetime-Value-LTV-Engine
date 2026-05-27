@@ -127,3 +127,13 @@ Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
 
 ### GitHub Actions
 ![Actions](assets/screenshots/github_actions.png)
+
+## Tasks Completed
+- Tested FastAPI endpoints
+- Added API testing scripts
+- Added sample request payloads
+- Improved README documentation
+- Added project screenshots
+
+## Outcome
+Project is now more production-ready and easier for recruiters to understand.
