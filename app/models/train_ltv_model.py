@@ -11,7 +11,7 @@ from sklearn.metrics import (
 def main():
     # Load dataset
     print("Loading dataset...")
-    df = pd.read_csv("data/preprocessed_telco_data.csv")
+    df = pd.read_csv("data/engineered_telco_data.csv")
     
     # Engineer LTV target
     print("Engineering LTV target...")

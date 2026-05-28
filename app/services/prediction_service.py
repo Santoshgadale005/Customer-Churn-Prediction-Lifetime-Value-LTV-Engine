@@ -2,6 +2,7 @@ import joblib
 import pandas as pd
 from app.database.models import PredictionLog
 from app.services.preprocessing import preprocess_customer
+from app.services.feature_engineering import engineer_features
 
 churn_model = joblib.load("app/models/xgboost_model.pkl")
 ltv_model = joblib.load("app/models/ltv_prediction_model.pkl")
@@ -9,6 +10,9 @@ ltv_model = joblib.load("app/models/ltv_prediction_model.pkl")
 def predict_customer_intelligence(data, db):
     # Use preprocessing to ensure all 30 features are present
     features = preprocess_customer(data)
+    
+    # Apply advanced behavioral feature engineering
+    features = engineer_features(features)
     
     churn_prediction = churn_model.predict(features)[0]
     churn_probability = churn_model.predict_proba(features)[0][1]

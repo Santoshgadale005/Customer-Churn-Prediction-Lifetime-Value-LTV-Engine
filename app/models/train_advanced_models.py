@@ -12,7 +12,7 @@ from sklearn.metrics import (
 
 def train_advanced_models():
     # Step 8: Load Dataset
-    data_path = "data/preprocessed_telco_data.csv"
+    data_path = "data/engineered_telco_data.csv"
     if not os.path.exists(data_path):
         print(f"Error: {data_path} not found.")
         return
