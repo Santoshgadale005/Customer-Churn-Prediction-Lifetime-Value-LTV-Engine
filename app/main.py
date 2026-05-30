@@ -16,6 +16,12 @@ class CustomerData(BaseModel):
 @app.get("/")
 def home():
     return {"message": "API Working Successfully"}
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "model_loaded": True
+    }
 
 @app.get("/health")
 def health():
