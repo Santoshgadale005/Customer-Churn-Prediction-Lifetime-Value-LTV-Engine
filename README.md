@@ -136,4 +136,13 @@ Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
 - Added project screenshots
 
 ## Outcome
-Project is now more production-ready and easier for recruiters to understand.
+Project is now more production-ready and easier for recruiters to understand
+
+## Completed Tasks
+- Added prediction logging
+- Created monitoring module
+- Tested prediction endpoint
+- Stored prediction history in CSV
+
+## Outcome
+Project now supports prediction tracking and monitoring.
