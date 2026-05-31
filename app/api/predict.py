@@ -32,6 +32,7 @@ from app.services.preprocessing import (
 )
 from app.database.db_dependency import get_db
 from app.services.prediction_service import predict_customer_intelligence
+from app.logger import log_prediction
 
 router = APIRouter(prefix="/predict", tags=["Predictions"])
 

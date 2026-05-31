@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -11,7 +12,8 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "churn_ltv_db")
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+ENCODED_PASSWORD = quote_plus(DB_PASSWORD)
+DATABASE_URL = f"postgresql://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Engine for the specific database
 engine = create_engine(DATABASE_URL)

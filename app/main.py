@@ -1,37 +1,14 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
-import numpy as np
+from app.api.predict import router as predict_router
+from app.api.health import router as health_router
+from app.auth import router as auth_router
 
-app = FastAPI()
+app = FastAPI(title="Customer Churn & LTV Prediction Engine", version="1.0.0")
 
-# Load model
-model = joblib.load("app/models/logistic_regression_model.pkl")
-
-class CustomerData(BaseModel):
-    tenure: int
-    MonthlyCharges: float
-    TotalCharges: float
+app.include_router(health_router)
+app.include_router(predict_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def home():
     return {"message": "API Working Successfully"}
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
-
-@app.post("/predict")
-def predict(data: CustomerData):
-
-    features = np.array([[
-        data.tenure,
-        data.MonthlyCharges,
-        data.TotalCharges
-    ]])
-
-    prediction = model.predict(features)[0]
-
-    return {
-        "prediction": int(prediction)
-    }

@@ -1,0 +1,26 @@
+name: CI Pipeline
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          # Install dependencies. If some heavy packages in requirements.txt (like catboost) fail,
+          # we can fallback or install only the core runtime dependencies needed for testing.
+          pip install -r requirements.txt || pip install fastapi uvicorn scikit-learn xgboost shap pandas numpy pydantic sqlalchemy passlib python-jose jose passlib[bcrypt]
+          pip install pytest httpx
+      - name: Run Tests
+        run: pytest tests/
+      - name: Build Docker Image
+        run: |
+          docker build -t churn-api .

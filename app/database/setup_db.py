@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import ProgrammingError
 import os
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 load_dotenv()
 
@@ -11,8 +12,11 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "churn_ltv_db")
 
+# URL-encode the password to handle special characters like @
+ENCODED_PASSWORD = quote_plus(DB_PASSWORD)
+
 # Connect to the default 'postgres' database to create the new one
-DEFAULT_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/postgres"
+DEFAULT_DATABASE_URL = f"postgresql://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/postgres"
 engine_default = create_engine(DEFAULT_DATABASE_URL, isolation_level="AUTOCOMMIT")
 
 def create_database():
@@ -27,7 +31,7 @@ def create_database():
 
 def create_tables():
     # Now connect to the new database to create tables
-    APP_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    APP_DATABASE_URL = f"postgresql://{DB_USER}:{ENCODED_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     engine_app = create_engine(APP_DATABASE_URL)
     
     create_customers_table = """
