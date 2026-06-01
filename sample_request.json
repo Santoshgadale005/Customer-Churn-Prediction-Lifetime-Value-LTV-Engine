@@ -1,0 +1,10 @@
+{
+  "gender": "Female",
+  "SeniorCitizen": 0,
+  "Partner": "Yes",
+  "Dependents": "No",
+  "tenure": 24,
+  "PhoneService": "Yes",
+  "MonthlyCharges": 75.5,
+  "TotalCharges": 1800
+}

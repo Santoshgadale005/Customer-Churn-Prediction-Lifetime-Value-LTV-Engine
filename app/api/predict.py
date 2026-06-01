@@ -8,13 +8,8 @@ Provides endpoints for:
   - Global feature importance
 """
 
-<<<<<<< HEAD
-from fastapi import APIRouter, HTTPException
-from logger import log_prediction
-=======
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
->>>>>>> cd8a142a4303e476ecf129ab4da61e683a966917
 import joblib
 import shap
 import numpy as np
@@ -36,7 +31,8 @@ from app.services.preprocessing import (
     MODEL_FEATURE_COLUMNS,
 )
 from app.database.db_dependency import get_db
-from app.services.prediction_service import predict_churn as service_predict_churn
+from app.services.prediction_service import predict_customer_intelligence
+from app.logger import log_prediction
 
 router = APIRouter(prefix="/predict", tags=["Predictions"])
 
@@ -68,44 +64,17 @@ def _check_model():
 
 @router.post(
     "/",
-    response_model=PredictionResponse,
-    summary="Predict churn for a single customer",
+    summary="Predict churn and LTV for a single customer",
 )
-def predict_churn(customer: CustomerData, db: Session = Depends(get_db)):
+def predict(data: dict, db: Session = Depends(get_db)):
     """
-    Accepts a single customer's raw data and returns a churn prediction
-    with probability and risk level. Logs the prediction to the database.
+    Accepts a single customer's raw data and returns a combined churn prediction,
+    LTV prediction, and business recommendation.
     """
     _check_model()
 
-<<<<<<< HEAD
-    # Preprocess
-    features = preprocess_customer(customer.model_dump())
-
-    # Predict
-    prediction = model.predict(...)
-    prediction = int(model.predict(features)[0])
-    probability = float(model.predict_proba(features)[0][1])
-    risk = get_risk_level(probability)
-=======
-    # Predict and log using the service
-    result = service_predict_churn(customer.model_dump(), db)
-    prediction = result["prediction"]
-    probability = result["churn_probability"]
-    risk = result["risk_level"]
->>>>>>> cd8a142a4303e476ecf129ab4da61e683a966917
-
-    message = (
-        f"Customer is {'likely' if prediction == 1 else 'unlikely'} to churn. "
-        f"Risk Level: {risk} ({probability:.1%} probability)."
-    )
-
-    return PredictionResponse(
-        churn_prediction=prediction,
-        churn_probability=round(probability, 4),
-        risk_level=risk,
-        message=message,
-    )
+    result = predict_customer_intelligence(data, db)
+    return result
 
 
 # ─── Endpoint: Prediction with SHAP Explanation ───────────────────

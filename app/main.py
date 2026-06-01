@@ -1,49 +1,21 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from app.monitoring import log_prediction, get_metrics
 import joblib
 import numpy as np
 
+from app.monitoring import log_prediction, get_metrics
+from app.api.predict import router as predict_router
+from app.api.health import router as health_router
+from app.auth import router as auth_router
+
 app = FastAPI()
 
-# Load model
-model = joblib.load("app/models/logistic_regression_model.pkl")
+# Include routers
+app.include_router(predict_router)
+app.include_router(health_router)
+app.include_router(auth_router)
 
-class CustomerData(BaseModel):
-    tenure: int
-    MonthlyCharges: float
-    TotalCharges: float
-
-@app.get("/")
-def home():
-    return {"message": "API Working Successfully"}
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy",
-        "model_loaded": True
-    }
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
-
-@app.post("/predict")
-def predict(data: CustomerData):
-
-    features = np.array([[
-        data.tenure,
-        data.MonthlyCharges,
-        data.TotalCharges
-    ]])
-
-    prediction = model.predict(features)[0]
-
-    return {
-        "prediction": int(prediction)
-    }
-
-
+# Optional: monitoring endpoint (if you use it)
 @app.get("/metrics")
 def metrics():
     return get_metrics()

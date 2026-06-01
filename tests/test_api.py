@@ -1,0 +1,40 @@
+from fastapi.testclient import TestClient
+from unittest.mock import MagicMock
+from app.main import app
+from app.database.db_dependency import get_db
+
+# Override the database dependency to avoid requiring a live DB in tests
+mock_db = MagicMock()
+app.dependency_overrides[get_db] = lambda: mock_db
+
+client = TestClient(app)
+
+def test_home():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "API Working Successfully"}
+
+def test_health():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert "status" in response.json()
+
+def test_prediction():
+    payload = {
+        "gender_Male": 1,
+        "SeniorCitizen": 0,
+        "tenure": 5,
+        "MonthlyCharges": 90,
+        "TotalCharges": 400
+    }
+    response = client.post(
+        "/predict/",
+        json=payload
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "churn_prediction" in data
+    assert "churn_probability" in data
+    assert "predicted_ltv" in data
+    assert "customer_segment" in data
+    assert "recommendation" in data
