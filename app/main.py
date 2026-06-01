@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from app.monitoring import log_prediction, get_metrics
 import joblib
 import numpy as np
 
@@ -41,3 +42,8 @@ def predict(data: CustomerData):
     return {
         "prediction": int(prediction)
     }
+
+
+@app.get("/metrics")
+def metrics():
+    return get_metrics()
