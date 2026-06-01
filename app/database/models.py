@@ -1,9 +1,11 @@
 from sqlalchemy import (
     Column,
+    DateTime,
     Integer,
     Float,
     String
 )
+from datetime import datetime
 from app.database.database import Base
 
 class PredictionLog(Base):
@@ -19,3 +21,4 @@ class PredictionLog(Base):
     predicted_ltv = Column(Float)
     customer_segment = Column(String)
     recommendation = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)

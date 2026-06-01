@@ -17,7 +17,15 @@ def test_home():
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert "status" in response.json()
+    assert response.json() == {"status": "healthy"}
+
+def test_model_info():
+    response = client.get("/api/v1/model-info")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["model_name"] == "xgboost_churn_model"
+    assert data["version"] == "v1"
+    assert "accuracy" in data
 
 def test_prediction():
     payload = {
@@ -28,7 +36,7 @@ def test_prediction():
         "TotalCharges": 400
     }
     response = client.post(
-        "/predict/",
+        "/api/v1/predict",
         json=payload
     )
     assert response.status_code == 200

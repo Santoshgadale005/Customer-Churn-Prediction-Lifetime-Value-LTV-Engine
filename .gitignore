@@ -42,4 +42,7 @@ venv.bak
 .DS_Store
 Thumbs.db
 
+# Runtime logs
+logs/
+
 # Data Cleaning and Preprocessing

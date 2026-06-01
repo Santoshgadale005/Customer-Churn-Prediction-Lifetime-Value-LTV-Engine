@@ -1,148 +1,163 @@
-# Customer Churn & LTV Engine
+# Customer Churn Prediction & Customer Lifetime Value Engine
 
 ## Project Overview
-This project is a production-level predictive analytics platform designed for telecom and subscription-based businesses. It focuses on two key metrics:
-1. **Customer Churn Prediction**: Identifying customers likely to leave the service.
-2. **Customer Lifetime Value (LTV)**: Predicting the total revenue a customer will generate.
 
-## Tech Stack
-- **Language**: Python 3.9+
-- **Database**: PostgreSQL (Data Warehouse)
-- **ML Frameworks**: Scikit-Learn, XGBoost
-- **Explainability**: SHAP
-- **API**: FastAPI
-- **Visualization**: Plotly, Seaborn
-- **Deployment**: Docker
+This project is an end-to-end predictive analytics platform for telecom and subscription businesses. It predicts which customers are likely to churn, estimates customer lifetime value (LTV), explains model behavior with SHAP, logs predictions to PostgreSQL, and exposes the results through FastAPI and dashboard-ready analytics views.
 
-## Project Structure
-- `app/`: Core application logic (API, Models, Services)
-- `data/`: Local storage for datasets (Git ignored)
-- `notebooks/`: Exploratory Data Analysis and prototyping
-- `dashboards/`: Visualization configurations
-- `docker/`: Containerization setup
+In interview language: this is a production-style ML system with offline training, online inference, persistent prediction logging, explainability, Dockerized deployment, and CI/CD validation.
 
-## Setup Instructions
-1. Create a virtual environment: `python3 -m venv venv`
-2. Activate venv: `source venv/bin/activate`
-3. Install dependencies: `pip install -r requirements.txt`
-# Customer Churn Prediction & Lifetime Value (LTV) Engine
+## Architecture
 
-A Machine Learning powered web application that predicts customer churn and estimates customer lifetime value using FastAPI and Streamlit.
+![Architecture](docs/architecture.png)
 
-## 🚀 Features
+Customer data flows into PostgreSQL, is transformed through preprocessing and feature engineering, then served through churn and LTV models. FastAPI returns predictions and recommendations while PostgreSQL stores prediction history for dashboards and monitoring.
 
-- Predict customer churn
-- Estimate customer lifetime value (LTV)
-- Interactive Streamlit dashboard
-- FastAPI backend API
-- Machine Learning integration
-- Clean project structure
-- Real-time prediction system
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-- Streamlit
-
-### Backend
-- FastAPI
-- Uvicorn
-
-### Machine Learning
-- Scikit-learn
-- Pandas
-- NumPy
-
-### Visualization
-- Matplotlib
-- Seaborn
-
----
-
-## 📂 Project Structure
-
-```bash
-Customer-Churn-Prediction-Lifetime-Value-LTV-Engine/
-│
-├── app/
-│   ├── api/
-│   ├── database/
-│   ├── models/
-│   ├── services/
-│   ├── __init__.py
-│   └── main.py
-│
-├── data/
-├── models/
-├── notebooks/
-├── reports/
-├── scripts/
-├── streamlit_app.py
-├── requirements.txt
-└── README.md
 ## Features
 
-- Customer Lifetime Value Prediction
-- Machine Learning Pipeline
-- SHAP Explainability
-- PostgreSQL Integration
-- Dockerized Deployment
-- GitHub Actions CI/CD
-- REST API Support
-- Production Logging
-
----
+- Churn classification using Logistic Regression, Random Forest, and XGBoost
+- LTV regression model for revenue prioritization
+- SHAP explainability for model transparency
+- FastAPI inference API with versioned endpoints
+- PostgreSQL prediction logging with timestamps
+- Metabase-ready dashboard layer
+- Docker and Docker Compose deployment
+- GitHub Actions CI/CD workflows
+- Pytest API and model checks
 
 ## Tech Stack
 
 - Python
 - FastAPI
-- Scikit-learn
 - PostgreSQL
-- Docker
-- GitHub Actions
+- SQLAlchemy
+- Pandas and NumPy
+- Scikit-learn
+- XGBoost
 - SHAP
-- Pandas & NumPy
+- Docker and Docker Compose
+- Metabase
+- GitHub Actions
+- Pytest
 
----
+## Project Structure
 
-## Project Screenshots
+```text
+customer-churn-ltv/
+├── app/
+│   ├── api/
+│   ├── database/
+│   ├── models/
+│   ├── model_registry/
+│   ├── services/
+│   └── utils/
+├── dashboards/
+├── data/
+├── docs/
+│   └── screenshots/
+├── reports/
+├── tests/
+├── docker/
+├── .github/
+│   └── workflows/
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
+└── app/main.py
+```
 
-### Dashboard
-![Dashboard](assets/screenshots/dashboard.png)
+## Setup Guide
 
-### Prediction Page
-![Prediction](assets/screenshots/prediction_page.png)
+Create and activate a virtual environment:
 
-### Prediction Result
-![Result](assets/screenshots/prediction_result.png)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-### SHAP Analysis
-![SHAP](assets/screenshots/shap_analysis.png)
+Run the API locally:
 
-### Docker Setup
-![Docker](assets/screenshots/docker_setup.png)
+```bash
+uvicorn app.main:app --reload
+```
 
-### GitHub Actions
-![Actions](assets/screenshots/github_actions.png)
+Run with Docker:
 
-## Tasks Completed
-- Tested FastAPI endpoints
-- Added API testing scripts
-- Added sample request payloads
-- Improved README documentation
-- Added project screenshots
+```bash
+docker-compose up --build
+```
 
-## Outcome
-Project is now more production-ready and easier for recruiters to understand
+Open:
 
-## Completed Tasks
-- Added prediction logging
-- Created monitoring module
-- Tested prediction endpoint
-- Stored prediction history in CSV
+- FastAPI docs: `http://localhost:8000/docs`
+- Health check: `http://localhost:8000/health`
+- Metabase dashboard: `http://localhost:3000`
 
-## Outcome
-Project now supports prediction tracking and monitoring.
+## API Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Service health check |
+| POST | `/api/v1/predict` | Generate churn, LTV, segment, and recommendation |
+| POST | `/api/v1/predict/explain` | Generate churn prediction with SHAP explanation |
+| POST | `/api/v1/predict/batch` | Generate batch churn predictions |
+| GET | `/api/v1/predict/feature-importance` | Return model feature importance |
+| GET | `/api/v1/model-info` | Return deployed model metadata |
+
+Example model-info response:
+
+```json
+{
+  "model_name": "xgboost_churn_model",
+  "version": "v1",
+  "accuracy": 0.791
+}
+```
+
+## Dashboard Screenshots
+
+### KPI Dashboard
+![KPI Dashboard](docs/screenshots/kpi_dashboard.png)
+
+### Revenue-at-Risk Dashboard
+![Revenue at Risk Dashboard](docs/screenshots/revenue_at_risk_dashboard.png)
+
+### Customer Segments Dashboard
+![Customer Segments Dashboard](docs/screenshots/customer_segments_dashboard.png)
+
+### Retention Priority Dashboard
+![Retention Priority Dashboard](docs/screenshots/retention_priority_dashboard.png)
+
+## Results
+
+Detailed metrics are documented in [reports/final_results.md](reports/final_results.md).
+
+| Model | Metric | Value |
+|---|---:|---:|
+| XGBoost Churn | Accuracy | 0.791 |
+| XGBoost Churn | Precision | 0.633 |
+| XGBoost Churn | Recall | 0.508 |
+| XGBoost Churn | F1 Score | 0.564 |
+| LTV Model | MAE | 1.089 |
+| LTV Model | RMSE | 1.995 |
+| LTV Model | R2 | 0.999999 |
+
+## Business Value
+
+The system helps a business identify customers likely to leave, estimate revenue impact, prioritize high-value retention actions, and give non-technical teams dashboard visibility into customer risk. Instead of treating every customer the same, teams can focus incentives and outreach where they protect the most revenue.
+
+## Resume Bullet Points
+
+- Built an end-to-end Customer Churn Prediction and Lifetime Value Engine using FastAPI, PostgreSQL, XGBoost, SHAP, Docker, and Metabase.
+- Developed dual machine-learning pipelines for churn classification and customer lifetime value prediction.
+- Implemented REST APIs, CI/CD pipelines, Dockerized deployment, explainable AI, and executive analytics dashboards.
+
+## Future Improvements
+
+- Add model retraining orchestration with scheduled jobs
+- Add authentication for production API access
+- Track model drift and data quality metrics
+- Export Metabase dashboard definitions as version-controlled assets
+- Add batch CSV upload endpoint for business users
+- Add Alembic migrations for database schema changes
