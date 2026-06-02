@@ -18,6 +18,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - LTV regression model for revenue prioritization
 - SHAP explainability for model transparency
 - FastAPI inference API with versioned endpoints
+- JWT authentication and role-based access control
 - PostgreSQL prediction logging with timestamps
 - Metabase-ready dashboard layer
 - Docker and Docker Compose deployment
@@ -99,11 +100,41 @@ Open:
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/health` | Service health check |
+| POST | `/register` | Create a user account |
+| POST | `/login` | Login and receive a JWT bearer token |
 | POST | `/api/v1/predict` | Generate churn, LTV, segment, and recommendation |
 | POST | `/api/v1/predict/explain` | Generate churn prediction with SHAP explanation |
 | POST | `/api/v1/predict/batch` | Generate batch churn predictions |
 | GET | `/api/v1/predict/feature-importance` | Return model feature importance |
-| GET | `/api/v1/model-info` | Return deployed model metadata |
+| GET | `/api/v1/model-info` | Return deployed model metadata; admin only |
+| GET | `/admin/users` | List users; admin only |
+
+## Authentication
+
+Register a user:
+
+```bash
+curl -X POST http://localhost:8000/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"santosh","email":"test@email.com","password":"password123"}'
+```
+
+Login:
+
+```bash
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"santosh","password":"password123"}'
+```
+
+Use the returned token with protected APIs:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/predict \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @sample_request.json
+```
 
 Example model-info response:
 

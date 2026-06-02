@@ -30,6 +30,8 @@ from app.services.preprocessing import (
     MODEL_FEATURE_COLUMNS,
 )
 from app.database.db_dependency import get_db
+from app.database.user_model import User
+from app.services.auth_service import get_current_user, require_admin
 from app.services.prediction_service import predict_customer_intelligence
 from app.logger import log_prediction
 
@@ -72,7 +74,11 @@ def _check_model():
     "/predict",
     summary="Predict churn and LTV for a single customer",
 )
-def predict(data: dict, db: Session = Depends(get_db)):
+def predict(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Accepts a single customer's raw data and returns a combined churn prediction,
     LTV prediction, and business recommendation.
@@ -80,7 +86,7 @@ def predict(data: dict, db: Session = Depends(get_db)):
     _check_model()
 
     try:
-        return predict_customer_intelligence(data, db)
+        return predict_customer_intelligence(data, db, current_user)
     except HTTPException:
         raise
     except ValueError as exc:
@@ -102,7 +108,10 @@ def predict(data: dict, db: Session = Depends(get_db)):
     response_model=ExplainedPredictionResponse,
     summary="Predict churn with SHAP explanation",
 )
-def predict_and_explain(customer: CustomerData):
+def predict_and_explain(
+    customer: CustomerData,
+    current_user: User = Depends(get_current_user),
+):
     """
     Returns a churn prediction along with a full SHAP explanation
     showing which features pushed the prediction higher or lower.
@@ -173,7 +182,10 @@ def predict_and_explain(customer: CustomerData):
     response_model=BatchPredictionResponse,
     summary="Predict churn for multiple customers",
 )
-def predict_batch(data: BatchCustomerData):
+def predict_batch(
+    data: BatchCustomerData,
+    current_user: User = Depends(get_current_user),
+):
     """
     Accepts a batch of customer records and returns predictions for all.
     """
@@ -231,7 +243,7 @@ def predict_batch(data: BatchCustomerData):
     response_model=FeatureImportanceResponse,
     summary="Get global feature importance from the model",
 )
-def get_feature_importance():
+def get_feature_importance(current_user: User = Depends(get_current_user)):
     """
     Returns the built-in feature importance scores from the XGBoost model,
     sorted by importance.
@@ -258,6 +270,6 @@ def get_feature_importance():
     "/model-info",
     summary="Get deployed model metadata",
 )
-def get_model_info():
+def get_model_info(current_admin: User = Depends(require_admin)):
     _check_model()
     return MODEL_INFO

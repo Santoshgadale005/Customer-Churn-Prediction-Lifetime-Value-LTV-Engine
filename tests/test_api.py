@@ -1,11 +1,21 @@
 from fastapi.testclient import TestClient
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 from app.main import app
 from app.database.db_dependency import get_db
+from app.services.auth_service import get_current_user, require_admin
 
 # Override the database dependency to avoid requiring a live DB in tests
 mock_db = MagicMock()
 app.dependency_overrides[get_db] = lambda: mock_db
+mock_user = SimpleNamespace(
+    id=1,
+    username="test_admin",
+    email="admin@example.com",
+    role="admin"
+)
+app.dependency_overrides[get_current_user] = lambda: mock_user
+app.dependency_overrides[require_admin] = lambda: mock_user
 
 client = TestClient(app)
 

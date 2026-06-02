@@ -10,3 +10,7 @@ psycopg2-binary
 joblib
 python-dotenv
 pytest
+python-jose
+passlib
+bcrypt<5
+python-multipart

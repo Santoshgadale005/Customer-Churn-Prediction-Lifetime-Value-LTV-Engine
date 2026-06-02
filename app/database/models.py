@@ -1,6 +1,7 @@
 from sqlalchemy import (
     Column,
     DateTime,
+    ForeignKey,
     Integer,
     Float,
     String
@@ -21,4 +22,5 @@ class PredictionLog(Base):
     predicted_ltv = Column(Float)
     customer_segment = Column(String)
     recommendation = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

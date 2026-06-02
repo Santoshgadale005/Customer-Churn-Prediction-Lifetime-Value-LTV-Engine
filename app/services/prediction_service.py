@@ -7,7 +7,7 @@ from app.services.feature_engineering import engineer_features
 churn_model = joblib.load("app/models/xgboost_model.pkl")
 ltv_model = joblib.load("app/models/ltv_prediction_model.pkl")
 
-def predict_customer_intelligence(data, db):
+def predict_customer_intelligence(data, db, current_user=None):
     # Use preprocessing to ensure all 30 features are present
     features = preprocess_customer(data)
     
@@ -47,7 +47,8 @@ def predict_customer_intelligence(data, db):
         churn_probability=float(churn_probability),
         predicted_ltv=float(predicted_ltv),
         customer_segment=segment,
-        recommendation=recommendation
+        recommendation=recommendation,
+        user_id=getattr(current_user, "id", None)
     )
     db.add(log)
     db.commit()

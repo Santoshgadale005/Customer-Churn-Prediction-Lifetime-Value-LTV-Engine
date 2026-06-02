@@ -74,6 +74,20 @@ class BatchCustomerData(BaseModel):
     customers: List[CustomerData] = Field(..., description="List of customer records")
 
 
+class UserCreate(BaseModel):
+    """Schema for user registration."""
+    username: str
+    email: str
+    password: str
+    role: str = "user"
+
+
+class LoginRequest(BaseModel):
+    """Schema for username/password login."""
+    username: str
+    password: str
+
+
 # ─── Response Schemas ──────────────────────────────────────────────
 
 class PredictionResponse(BaseModel):
@@ -133,3 +147,19 @@ class FeatureImportanceResponse(BaseModel):
     """Response schema for global feature importance."""
     features: List[FeatureScore]
     model_type: str
+
+
+class TokenResponse(BaseModel):
+    """Response schema returned after successful login."""
+    access_token: str
+    token_type: str
+
+
+class UserResponse(BaseModel):
+    """Public user fields returned by auth endpoints."""
+    id: int
+    username: str
+    email: str
+    role: str
+
+    model_config = {"from_attributes": True}
