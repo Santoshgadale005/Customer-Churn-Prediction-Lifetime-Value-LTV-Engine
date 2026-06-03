@@ -35,6 +35,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - Scikit-learn
 - XGBoost
 - SHAP
+- MLflow (Experiment Tracking & Model Registry)
 - Docker and Docker Compose
 - Metabase
 - GitHub Actions
@@ -147,6 +148,9 @@ Example model-info response:
 ```
 
 ## Dashboard Screenshots
+
+### MLflow Dashboard
+![MLflow Dashboard](docs/screenshots/mlflow_dashboard.png)
 
 ### KPI Dashboard
 ![KPI Dashboard](docs/screenshots/kpi_dashboard.png)

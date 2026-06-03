@@ -46,3 +46,7 @@ Thumbs.db
 logs/
 
 # Data Cleaning and Preprocessing
+
+# MLflow
+mlruns/
+mlflow.db
