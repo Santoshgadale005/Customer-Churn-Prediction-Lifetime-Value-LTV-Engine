@@ -192,3 +192,8 @@ The system helps a business identify customers likely to leave, estimate revenue
 - Export Metabase dashboard definitions as version-controlled assets
 - Add batch CSV upload endpoint for business users
 - Add Alembic migrations for database schema changes
+## API Documentation
+## Authentication
+## Monitoring
+## Deployment
+## Project Architecture
