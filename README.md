@@ -36,6 +36,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - XGBoost
 - SHAP
 - MLflow (Experiment Tracking & Model Registry)
+- Apache Airflow (Workflow Orchestration)
 - Docker and Docker Compose
 - Metabase
 - GitHub Actions
@@ -148,6 +149,9 @@ Example model-info response:
 ```
 
 ## Dashboard Screenshots
+
+### Airflow DAG Dashboard
+![Airflow DAG Dashboard](docs/screenshots/airflow_dashboard.png)
 
 ### MLflow Dashboard
 ![MLflow Dashboard](docs/screenshots/mlflow_dashboard.png)
