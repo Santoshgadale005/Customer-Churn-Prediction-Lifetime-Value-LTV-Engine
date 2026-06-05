@@ -1,0 +1,29 @@
+groups:
+  - name: api_alerts
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[5m])) by (le)) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "FastAPI p95 latency is above 3 seconds"
+          description: "The 95th percentile API latency has stayed above 3 seconds for at least 2 minutes."
+
+      - alert: HighErrorRate
+        expr: sum(rate(api_errors_total[5m])) / clamp_min(sum(rate(api_requests_total[5m])), 1) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "FastAPI error rate is above 5 percent"
+          description: "More than 5 percent of API responses are 5xx errors over the last 5 minutes."
+
+      - alert: ApiDown
+        expr: up{job="fastapi"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "FastAPI metrics endpoint is down"
+          description: "Prometheus cannot scrape the FastAPI /metrics endpoint."

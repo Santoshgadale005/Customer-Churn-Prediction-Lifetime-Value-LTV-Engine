@@ -1,21 +1,47 @@
-prediction_count = 0
-churn_count = 0
-non_churn_count = 0
+"""
+Monitoring module — upgraded to emit Prometheus metrics.
 
-def log_prediction(prediction):
-    global prediction_count, churn_count, non_churn_count
+Keeps backward-compatible get_metrics() helper for the /metrics JSON endpoint
+and exposes Prometheus counters/gauges that are scraped by Prometheus.
+"""
 
-    prediction_count += 1
+from app.utils.metrics import (
+    prediction_requests_total,
+    churn_predictions_total,
+    non_churn_predictions_total,
+    churn_rate_gauge,
+)
+
+# In-memory fallback counters (used by the simple JSON metrics view)
+_total = 0
+_churn = 0
+_non_churn = 0
+
+
+def log_prediction(prediction: int):
+    """Increment all relevant counters for a single prediction."""
+    global _total, _churn, _non_churn
+
+    _total += 1
+    prediction_requests_total.inc()
 
     if prediction == 1:
-        churn_count += 1
+        _churn += 1
+        churn_predictions_total.inc()
     else:
-        non_churn_count += 1
+        _non_churn += 1
+        non_churn_predictions_total.inc()
+
+    # Update running churn rate gauge
+    if _total > 0:
+        churn_rate_gauge.set(_churn / _total)
 
 
-def get_metrics():
+def get_metrics() -> dict:
+    """Return a simple JSON summary of prediction counts."""
     return {
-        "total_predictions": prediction_count,
-        "churn_predictions": churn_count,
-        "non_churn_predictions": non_churn_count
+        "total_predictions": _total,
+        "churn_predictions": _churn,
+        "non_churn_predictions": _non_churn,
+        "churn_rate": round(_churn / _total, 4) if _total > 0 else 0.0,
     }

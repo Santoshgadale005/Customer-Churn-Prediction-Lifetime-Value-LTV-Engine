@@ -1,9 +1,7 @@
-from app.monitoring import log_prediction
+from app.monitoring import get_metrics, log_prediction
 
-result = log_prediction(
-    101,
-    "No Churn",
-    15000
-)
+log_prediction(0)
+log_prediction(1)
+result = get_metrics()
 
 print(result)

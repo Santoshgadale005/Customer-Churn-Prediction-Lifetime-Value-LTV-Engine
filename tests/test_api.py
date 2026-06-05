@@ -29,6 +29,20 @@ def test_health():
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
 
+def test_prometheus_metrics_endpoint():
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert "text/plain" in response.headers["content-type"]
+    assert "api_requests_total" in response.text
+    assert "request_duration_seconds" in response.text
+
+def test_metrics_summary():
+    response = client.get("/metrics/summary")
+    assert response.status_code == 200
+    data = response.json()
+    assert "total_predictions" in data
+    assert "churn_rate" in data
+
 def test_model_info():
     response = client.get("/api/v1/model-info")
     assert response.status_code == 200

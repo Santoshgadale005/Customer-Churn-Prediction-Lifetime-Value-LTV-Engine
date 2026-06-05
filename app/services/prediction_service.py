@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 from app.database.models import PredictionLog
+from app.monitoring import log_prediction as log_prediction_metrics
 from app.services.preprocessing import preprocess_customer
 from app.services.feature_engineering import engineer_features
 
@@ -53,6 +54,8 @@ def predict_customer_intelligence(data, db, current_user=None):
     db.add(log)
     db.commit()
     db.refresh(log)
+
+    log_prediction_metrics(int(churn_prediction))
     
     return {
         "churn_prediction": int(churn_prediction),

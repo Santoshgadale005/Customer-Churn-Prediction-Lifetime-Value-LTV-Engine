@@ -31,6 +31,7 @@ from app.services.preprocessing import (
 )
 from app.database.db_dependency import get_db
 from app.database.user_model import User
+from app.monitoring import log_prediction as log_prediction_metrics
 from app.services.auth_service import get_current_user, require_admin
 from app.services.prediction_service import predict_customer_intelligence
 from app.logger import log_prediction
@@ -124,6 +125,7 @@ def predict_and_explain(
         prediction = int(model.predict(features)[0])
         probability = float(model.predict_proba(features)[0][1])
         risk = get_risk_level(probability)
+        log_prediction_metrics(prediction)
 
         shap_values = explainer.shap_values(features)
         base_value = float(explainer.expected_value)
@@ -201,6 +203,7 @@ def predict_batch(
         results = []
         for i, (pred, prob) in enumerate(zip(predictions, probabilities)):
             risk = get_risk_level(float(prob))
+            log_prediction_metrics(int(pred))
             results.append(
                 PredictionResponse(
                     customer_index=i,

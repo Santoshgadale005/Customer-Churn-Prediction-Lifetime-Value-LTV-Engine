@@ -22,6 +22,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - PostgreSQL prediction logging with timestamps
 - Metabase-ready dashboard layer
 - Docker and Docker Compose deployment
+- Prometheus, Grafana, and cAdvisor production monitoring
 - GitHub Actions CI/CD workflows
 - Pytest API and model checks
 
@@ -39,6 +40,9 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - Apache Airflow (Workflow Orchestration)
 - Docker and Docker Compose
 - Metabase
+- Prometheus
+- Grafana
+- cAdvisor
 - GitHub Actions
 - Pytest
 
@@ -96,12 +100,17 @@ Open:
 - FastAPI docs: `http://localhost:8000/docs`
 - Health check: `http://localhost:8000/health`
 - Metabase dashboard: `http://localhost:3000`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3001`
+- cAdvisor: `http://localhost:8081`
 
 ## API Endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/health` | Service health check |
+| GET | `/metrics` | Prometheus metrics scrape endpoint |
+| GET | `/metrics/summary` | JSON monitoring summary |
 | POST | `/register` | Create a user account |
 | POST | `/login` | Login and receive a JWT bearer token |
 | POST | `/api/v1/predict` | Generate churn, LTV, segment, and recommendation |
@@ -192,16 +201,41 @@ The system helps a business identify customers likely to leave, estimate revenue
 - Developed dual machine-learning pipelines for churn classification and customer lifetime value prediction.
 - Implemented REST APIs, CI/CD pipelines, Dockerized deployment, explainable AI, and executive analytics dashboards.
 
+## Monitoring
+
+The project includes a production monitoring stack:
+
+- FastAPI exports Prometheus metrics at `/metrics`
+- Prometheus scrapes FastAPI and cAdvisor every 15 seconds
+- Grafana is provisioned with the `Customer Intelligence Monitoring` dashboard
+- cAdvisor exposes container CPU, memory, filesystem, and uptime metrics
+- Prometheus alert rules cover high latency, high error rate, and API downtime
+
+Monitoring URLs:
+
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3001`
+- cAdvisor: `http://localhost:8081`
+
+Useful Prometheus queries:
+
+```promql
+prediction_requests_total
+sum(rate(api_requests_total[5m])) by (endpoint)
+histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[5m])) by (le))
+time() - container_start_time_seconds
+```
+
+Default Grafana login:
+
+```text
+admin / admin
+```
+
 ## Future Improvements
 
-- Add model retraining orchestration with scheduled jobs
-- Add authentication for production API access
-- Track model drift and data quality metrics
+- Add alert notification channels such as email, Slack, or PagerDuty
+- Add distributed tracing with OpenTelemetry
+- Add Alembic migrations for database schema changes
 - Export Metabase dashboard definitions as version-controlled assets
 - Add batch CSV upload endpoint for business users
-- Add Alembic migrations for database schema changes
-## API Documentation
-## Authentication
-## Monitoring
-## Deployment
-## Project Architecture
