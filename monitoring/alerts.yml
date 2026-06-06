@@ -27,3 +27,21 @@ groups:
         annotations:
           summary: "FastAPI metrics endpoint is down"
           description: "Prometheus cannot scrape the FastAPI /metrics endpoint."
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis cache exporter is down"
+          description: "Prometheus cannot scrape Redis metrics, or Redis is unavailable."
+
+      - alert: CacheErrors
+        expr: increase(prediction_cache_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prediction cache errors detected"
+          description: "The FastAPI service reported Redis cache errors during the last 5 minutes."

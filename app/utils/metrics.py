@@ -47,3 +47,24 @@ churn_rate_gauge = Gauge(
     "churn_rate_current",
     "Current running churn rate (churn / total predictions)",
 )
+
+# ── Redis Cache Metrics ──────────────────────────────────────────
+cache_hits_total = Counter(
+    "prediction_cache_hits_total",
+    "Total prediction cache hits",
+)
+
+cache_misses_total = Counter(
+    "prediction_cache_misses_total",
+    "Total prediction cache misses",
+)
+
+cache_errors_total = Counter(
+    "prediction_cache_errors_total",
+    "Total Redis cache operation errors",
+)
+
+cache_hit_rate = Gauge(
+    "prediction_cache_hit_rate",
+    "Current prediction cache hit rate",
+)

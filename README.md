@@ -23,6 +23,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - Metabase-ready dashboard layer
 - Docker and Docker Compose deployment
 - Prometheus, Grafana, and cAdvisor production monitoring
+- Redis prediction caching and database query optimization
 - GitHub Actions CI/CD workflows
 - Pytest API and model checks
 
@@ -43,6 +44,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - Prometheus
 - Grafana
 - cAdvisor
+- Redis
 - GitHub Actions
 - Pytest
 
@@ -103,6 +105,8 @@ Open:
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3001`
 - cAdvisor: `http://localhost:8081`
+- Redis: `localhost:6379`
+- Redis Exporter: `http://localhost:9121/metrics`
 
 ## API Endpoints
 
@@ -111,6 +115,8 @@ Open:
 | GET | `/health` | Service health check |
 | GET | `/metrics` | Prometheus metrics scrape endpoint |
 | GET | `/metrics/summary` | JSON monitoring summary |
+| GET | `/api/v1/cache/status` | Redis cache health and configuration; admin only |
+| DELETE | `/api/v1/cache` | Invalidate prediction cache; admin only |
 | POST | `/register` | Create a user account |
 | POST | `/login` | Login and receive a JWT bearer token |
 | POST | `/api/v1/predict` | Generate churn, LTV, segment, and recommendation |
@@ -231,6 +237,34 @@ Default Grafana login:
 ```text
 admin / admin
 ```
+
+## Performance Optimization
+
+Prediction responses are cached in Redis using deterministic SHA-256 keys generated from sorted customer input. Cache keys include a model cache version, allowing deployments to invalidate old predictions when a model changes.
+
+- Cache TTL: 3,600 seconds
+- Redis eviction policy: `allkeys-lru`
+- Redis memory limit: 256 MB
+- Cache failures fall back to normal model inference
+- Admin invalidation endpoint: `DELETE /api/v1/cache`
+- Redis metrics are collected through Redis Exporter
+
+Measured locally with `scripts/benchmark_cache.py`:
+
+| Request | Latency |
+|---|---:|
+| Cold model prediction | 70.82 ms |
+| Warm cached prediction average | 2.82 ms |
+| Latency reduction | 96.01% |
+
+PostgreSQL indexes optimize dashboard filters and ordering on:
+
+- `churn_probability`
+- `customer_segment`
+- `created_at`
+- `user_id`
+
+Dashboard SQL selects only required columns instead of using `SELECT *`.
 
 ## Future Improvements
 

@@ -43,6 +43,16 @@ def test_metrics_summary():
     assert "total_predictions" in data
     assert "churn_rate" in data
 
+def test_cache_status():
+    response = client.get("/api/v1/cache/status")
+    assert response.status_code == 200
+    assert response.json()["status"] in {"healthy", "unavailable"}
+
+def test_cache_invalidation():
+    response = client.delete("/api/v1/cache")
+    assert response.status_code == 200
+    assert response.json()["message"] == "Prediction cache invalidated"
+
 def test_model_info():
     response = client.get("/api/v1/model-info")
     assert response.status_code == 200

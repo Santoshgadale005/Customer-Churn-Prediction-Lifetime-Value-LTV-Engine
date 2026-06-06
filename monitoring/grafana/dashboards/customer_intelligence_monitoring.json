@@ -122,6 +122,73 @@
       ],
       "title": "Container Uptime Seconds",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "prediction_cache_hit_rate",
+          "legendFormat": "Cache hit rate"
+        }
+      ],
+      "title": "Prediction Cache Hit Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 8
+      },
+      "id": 6,
+      "targets": [
+        {
+          "expr": "prediction_cache_hits_total",
+          "legendFormat": "Hits"
+        },
+        {
+          "expr": "prediction_cache_misses_total",
+          "legendFormat": "Misses"
+        }
+      ],
+      "title": "Prediction Cache Hits and Misses",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 7,
+      "targets": [
+        {
+          "expr": "redis_memory_used_bytes",
+          "legendFormat": "Redis memory"
+        }
+      ],
+      "title": "Redis Memory Usage",
+      "type": "timeseries"
     }
   ],
   "refresh": "15s",

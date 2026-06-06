@@ -15,3 +15,4 @@ passlib
 bcrypt<5
 python-multipart
 prometheus-client
+redis

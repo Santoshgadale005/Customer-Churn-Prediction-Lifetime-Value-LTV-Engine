@@ -5,9 +5,11 @@ from fastapi.responses import Response
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.api.auth import router as auth_router
+from app.api.cache import router as cache_router
 from app.api.health import router as health_router
 from app.api.predict import router as predict_router
 from app.database.database import Base, engine
+from app.database.indexes import ensure_prediction_indexes
 from app.monitoring import get_metrics
 from app.utils.metrics import (
     api_errors_total,
@@ -19,6 +21,7 @@ app = FastAPI(title="Customer Churn & LTV Prediction Engine", version="1.0.0")
 
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(cache_router)
 app.include_router(predict_router)
 
 
@@ -61,5 +64,6 @@ def create_database_tables():
         from app.database import models, user_model  # noqa: F401
 
         Base.metadata.create_all(bind=engine)
+        ensure_prediction_indexes(engine)
     except Exception as exc:
         print(f"Database table creation skipped: {exc}")

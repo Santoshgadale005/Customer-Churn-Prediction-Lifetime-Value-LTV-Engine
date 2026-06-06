@@ -4,6 +4,7 @@ from app.database.models import PredictionLog
 from app.monitoring import log_prediction as log_prediction_metrics
 from app.services.preprocessing import preprocess_customer
 from app.services.feature_engineering import engineer_features
+from app.utils.cache import cache_prediction, get_cached_prediction
 
 # Load models safely
 try:
@@ -18,6 +19,17 @@ except Exception as e:
 
 
 def predict_customer_intelligence(data, db, current_user=None):
+    # Try to get from cache first
+    try:
+        cached_result = get_cached_prediction(data)
+        if cached_result is not None:
+            try:
+                log_prediction_metrics(int(cached_result["churn_prediction"]))
+            except Exception as metric_error:
+                print(f"Metrics logging failed: {metric_error}")
+            return {**cached_result, "cache_hit": True}
+    except Exception as cache_error:
+        print(f"Cache lookup failed: {cache_error}")
 
     # Demo mode if models fail to load
     if not MODELS_LOADED:
@@ -26,7 +38,8 @@ def predict_customer_intelligence(data, db, current_user=None):
             "churn_probability": 0.50,
             "predicted_ltv": 5000.0,
             "customer_segment": "Demo Mode",
-            "recommendation": "Models could not be loaded"
+            "recommendation": "Models could not be loaded",
+            "cache_hit": False
         }
 
     # Preprocess customer data
@@ -88,10 +101,18 @@ def predict_customer_intelligence(data, db, current_user=None):
     except Exception as metric_error:
         print(f"Metrics logging failed: {metric_error}")
 
-    return {
+    result = {
         "churn_prediction": int(churn_prediction),
         "churn_probability": float(churn_probability),
         "predicted_ltv": float(predicted_ltv),
         "customer_segment": segment,
-        "recommendation": recommendation
+        "recommendation": recommendation,
     }
+    
+    try:
+        cache_prediction(data, result)
+    except Exception as cache_error:
+        print(f"Cache write failed: {cache_error}")
+
+    return {**result, "cache_hit": False}
+

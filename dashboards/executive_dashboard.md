@@ -76,9 +76,18 @@ This document provides the blueprint for the Executive Intelligence Layer create
 ### Retention Priority Dashboard
 - **SQL**:
   ```sql
-  SELECT * 
-  FROM prediction_logs 
-  WHERE churn_probability > 0.7 AND predicted_ltv > 5000;
+  SELECT
+      id,
+      churn_probability,
+      predicted_ltv,
+      customer_segment,
+      recommendation,
+      created_at
+  FROM prediction_logs
+  WHERE churn_probability > 0.7
+    AND predicted_ltv > 5000
+  ORDER BY churn_probability DESC, predicted_ltv DESC
+  LIMIT 100;
   ```
 - **Visualization**: Table
 - **Business Meaning**: These customers represent the highest business priority.
@@ -86,9 +95,15 @@ This document provides the blueprint for the Executive Intelligence Layer create
 ### Top 20 Valuable Customers
 - **SQL**:
   ```sql
-  SELECT * 
-  FROM prediction_logs 
-  ORDER BY predicted_ltv DESC 
+  SELECT
+      id,
+      predicted_ltv,
+      churn_probability,
+      customer_segment,
+      recommendation,
+      created_at
+  FROM prediction_logs
+  ORDER BY predicted_ltv DESC
   LIMIT 20;
   ```
 - **Visualization**: Table
