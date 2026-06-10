@@ -9,6 +9,7 @@ with drop_first=True).
 
 import pandas as pd
 import numpy as np
+from typing import List, Dict
 
 
 # The exact column order the model was trained on.
@@ -45,9 +46,23 @@ MODEL_FEATURE_COLUMNS = [
     "PaymentMethod_Electronic check",
     "PaymentMethod_Mailed check",
 ]
+def preprocess_customer(customer_data: Dict) -> pd.DataFrame:
+    """
+    Transform a single customer's raw data into model-ready features.
+    """
+    df = pd.DataFrame([customer_data])
 
+    df_encoded = pd.get_dummies(df, drop_first=True)
 
-def preprocess_customer(customer_data: dict) -> pd.DataFrame:
+    for col in MODEL_FEATURE_COLUMNS:
+        if col not in df_encoded.columns:
+            df_encoded[col] = 0
+
+    df_final = df_encoded[MODEL_FEATURE_COLUMNS]
+
+    return df_final
+
+def preprocess_batch(customers: List[Dict]) -> pd.DataFrame:
     """
     Transform a single customer's raw data into model-ready features.
 
@@ -74,7 +89,7 @@ def preprocess_customer(customer_data: dict) -> pd.DataFrame:
     return df_final
 
 
-def preprocess_batch(customers: list[dict]) -> pd.DataFrame:
+def preprocess_batch(customers: List[Dict]) -> pd.DataFrame:
     """
     Transform a batch of customer records into model-ready features.
 

@@ -11,7 +11,7 @@ Provides endpoints for:
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 import joblib
-import shap
+##import shap
 import os
 
 from app.api.schemas import (

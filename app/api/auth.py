@@ -55,8 +55,10 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/admin/users", response_model=list[UserResponse])
-def list_users(
+from typing import List
+
+@router.get("/admin/users", response_model=List[UserResponse])
+def get_users(
     db: Session = Depends(get_db),
     current_admin: User = Depends(require_admin),
 ):
