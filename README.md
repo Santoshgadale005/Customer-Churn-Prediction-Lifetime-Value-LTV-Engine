@@ -154,6 +154,56 @@ All manifests are located in the `k8s/` directory.
 ##### Horizontal Scaling Output
 ![Kubernetes Scaling](docs/screenshots/k8s_scaling.png)
 
+### Cloud Deployment: Amazon Web Services (AWS)
+
+Deploy the system as a cloud-hosted predictive analytics platform using AWS EC2, AWS RDS PostgreSQL, Nginx, and Metabase.
+
+#### Architecture Overview
+- **AWS Route 53 & Nginx Reverse Proxy**: External traffic on ports 80/443 is securely routed through Route 53 to an Nginx container running on an EC2 instance. Nginx handles proxying to the application or dashboard and provides basic security headers.
+- **FastAPI Application (EC2)**: Runs inside a Docker container on the EC2 host.
+- **Redis (EC2)**: A caching container facilitating low-latency predictions.
+- **Metabase (EC2)**: A dashboard analytics container exposing customer reports.
+- **Amazon RDS (PostgreSQL)**: Managed database instance running Multi-AZ PostgreSQL for secure, persistent data logging.
+
+#### Cloud Architecture Diagram
+![AWS Deployment Architecture](docs/screenshots/aws_deployment_architecture.png)
+
+#### Prerequisites
+- Active AWS Account
+- EC2 Instance launched (Ubuntu 22.04 LTS, `t2.micro` or `t3.medium`)
+- Managed RDS PostgreSQL database (`db.t3.micro` recommended)
+
+#### Security Group Configuration
+Allow the following ports in your Security Group rules:
+- **Port 22**: SSH access (restricted to your IP)
+- **Port 80**: HTTP web traffic (open to all)
+- **Port 443**: HTTPS web traffic (open to all)
+- **Port 8000**: Optional direct API access (restricted/closed if proxied by Nginx)
+- **Port 3000**: Metabase Dashboard (restricted/closed if proxied by Nginx)
+
+Ensure your RDS database security group allows inbound PostgreSQL traffic (Port 5432) **only** from your EC2 instance's security group.
+
+#### Automated Deployment Steps
+1. **Connect to EC2**:
+   ```bash
+   ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
+   ```
+2. **Transfer project files and setup production environment configuration**:
+   ```bash
+   # Create production .env based on the template
+   cp .env.production.example .env
+   # Edit with your RDS endpoint and security credentials
+   nano .env
+   ```
+3. **Execute the AWS Deployment Script**:
+   ```bash
+   chmod +x scripts/deploy_aws.sh
+   ./scripts/deploy_aws.sh
+   ```
+4. **Access Cloud Endpoints**:
+   - **FastAPI API Docs**: `http://YOUR_EC2_PUBLIC_IP/docs`
+   - **Metabase Dashboard Console**: `http://YOUR_EC2_PUBLIC_IP/dashboard/`
+
 Open:
 
 - FastAPI docs (Docker Compose): `http://localhost:8000/docs`
@@ -261,6 +311,8 @@ The system helps a business identify customers likely to leave, estimate revenue
 ## Resume Bullet Points
 
 - Built an end-to-end Customer Churn Prediction and Lifetime Value Engine using FastAPI, PostgreSQL, XGBoost, SHAP, Docker, and Metabase.
+- Deployed the prediction engine to AWS, provisioning EC2 instances for containerized FastAPI, Redis, and Metabase microservices, and Amazon RDS for managed, Multi-AZ PostgreSQL data persistence.
+- Configured a secure production networking layer on AWS using custom Security Groups, environment-based secrets management, and Nginx as a reverse proxy/SSL termination gateway.
 - Evolved the architecture into a cloud-native platform by deploying FastAPI, PostgreSQL, and Redis to a Kubernetes cluster with multi-replica configurations, NodePort services, Persistent Volume Claims (PVCs), and ConfigMaps/Secrets.
 - Implemented enterprise-grade orchestration capabilities, demonstrating self-healing (automatic pod recreation), horizontal scaling, and zero-downtime rolling updates.
 - Developed dual machine-learning pipelines for churn classification and customer lifetime value prediction.
