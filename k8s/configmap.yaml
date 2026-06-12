@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: churn-config
+data:
+  DB_HOST: postgres-service
+  DB_PORT: "5432"
+  DB_NAME: churn_ltv_db
+  REDIS_HOST: redis-service
+  REDIS_PORT: "6379"
+  CACHE_TTL_SECONDS: "3600"
+  CACHE_VERSION: v1

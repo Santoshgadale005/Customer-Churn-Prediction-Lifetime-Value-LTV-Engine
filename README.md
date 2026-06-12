@@ -39,7 +39,7 @@ Customer data flows into PostgreSQL, is transformed through preprocessing and fe
 - SHAP
 - MLflow (Experiment Tracking & Model Registry)
 - Apache Airflow (Workflow Orchestration)
-- Docker and Docker Compose
+- Docker, Docker Compose, and Kubernetes
 - Metabase
 - Prometheus
 - Grafana
@@ -97,10 +97,67 @@ Run with Docker:
 docker-compose up --build
 ```
 
+### Container Orchestration: Kubernetes
+
+Deploy the system to a local Kubernetes cluster (Docker Desktop or Minikube) for container orchestration, high availability, rolling updates, and self-healing.
+
+All manifests are located in the `k8s/` directory.
+
+#### Prerequisites
+- Active local Kubernetes cluster (Docker Desktop K8s or Minikube)
+- `kubectl` CLI installed
+
+#### Deployment Steps
+1. **Build the local Docker image**:
+   ```bash
+   docker build -t churn-api:latest .
+   ```
+2. **Apply the Kubernetes configurations**:
+   ```bash
+   kubectl apply -f k8s/
+   ```
+3. **Verify all components are running**:
+   ```bash
+   kubectl get all
+   ```
+
+#### Accessing the application
+- FastAPI docs (Kubernetes): `http://localhost:30080/docs`
+- Health check (Kubernetes): `http://localhost:30080/health`
+
+#### Orchestration Features Demonstrated
+- **Self-Healing**: If a pod crashes or is deleted, Kubernetes automatically launches a new one.
+  ```bash
+  kubectl delete pod <pod-name>
+  kubectl get pods
+  ```
+- **Horizontal Scaling**: Scale the API to handle more traffic:
+  ```bash
+  kubectl scale deployment churn-api --replicas=4
+  kubectl get pods
+  ```
+- **Rolling Updates**: Update components with zero downtime:
+  ```bash
+  # Tag your local image as v2
+  docker tag churn-api:latest churn-api:v2
+  # Perform rolling update
+  kubectl set image deployment/churn-api churn-api=churn-api:v2
+  # Track status
+  kubectl rollout status deployment/churn-api
+  ```
+
+#### Kubernetes Screenshots
+
+##### Deployment Output
+![Kubernetes Deployment](docs/screenshots/k8s_deployment.png)
+
+##### Horizontal Scaling Output
+![Kubernetes Scaling](docs/screenshots/k8s_scaling.png)
+
 Open:
 
-- FastAPI docs: `http://localhost:8000/docs`
-- Health check: `http://localhost:8000/health`
+- FastAPI docs (Docker Compose): `http://localhost:8000/docs`
+- Health check (Docker Compose): `http://localhost:8000/health`
 - Metabase dashboard: `http://localhost:3000`
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3001`
@@ -204,6 +261,8 @@ The system helps a business identify customers likely to leave, estimate revenue
 ## Resume Bullet Points
 
 - Built an end-to-end Customer Churn Prediction and Lifetime Value Engine using FastAPI, PostgreSQL, XGBoost, SHAP, Docker, and Metabase.
+- Evolved the architecture into a cloud-native platform by deploying FastAPI, PostgreSQL, and Redis to a Kubernetes cluster with multi-replica configurations, NodePort services, Persistent Volume Claims (PVCs), and ConfigMaps/Secrets.
+- Implemented enterprise-grade orchestration capabilities, demonstrating self-healing (automatic pod recreation), horizontal scaling, and zero-downtime rolling updates.
 - Developed dual machine-learning pipelines for churn classification and customer lifetime value prediction.
 - Implemented REST APIs, CI/CD pipelines, Dockerized deployment, explainable AI, and executive analytics dashboards.
 
