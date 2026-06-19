@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pandas
 numpy
 scikit-learn
@@ -10,9 +10,14 @@ psycopg2-binary
 joblib
 python-dotenv
 pytest
-python-jose
-passlib
+pytest-asyncio
+httpx
+python-jose[cryptography]
+passlib[bcrypt]
 bcrypt<5
 python-multipart
 prometheus-client
 redis
+scipy
+mlflow
+locust

@@ -1,0 +1,38 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: churn-api-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: churn-api
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: churn-api-netpol
+spec:
+  podSelector:
+    matchLabels:
+      app: churn-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - ports:
+    - port: 8000
+      protocol: TCP
+  egress:
+  # Allow DNS
+  - ports:
+    - port: 53
+      protocol: UDP
+  # Allow DB access
+  - ports:
+    - port: 5432
+      protocol: TCP
+  # Allow Redis
+  - ports:
+    - port: 6379
+      protocol: TCP

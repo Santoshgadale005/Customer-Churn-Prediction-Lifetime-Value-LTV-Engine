@@ -2,22 +2,66 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: churn-api
+  labels:
+    app: churn-api
+    version: "1.0"
+    day: "29"
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: churn-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0     # Zero-downtime rolling updates
   template:
     metadata:
       labels:
         app: churn-api
     spec:
+      # ── Security: drop all Linux capabilities ──────────────────────────────
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
       - name: churn-api
         image: churn-api:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
+          name: http
+
+        # ── Resource Requests & Limits (Day 29 optimization) ─────────────────
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        # ── Liveness & Readiness Probes ───────────────────────────────────────
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          failureThreshold: 3
+          timeoutSeconds: 5
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 2
+          timeoutSeconds: 3
+
         env:
         - name: DB_USER
           valueFrom:
@@ -64,3 +108,14 @@ spec:
             configMapKeyRef:
               name: churn-config
               key: CACHE_VERSION
+        - name: LOG_FORMAT
+          value: "json"
+        - name: LOG_LEVEL
+          value: "INFO"
+
+        # ── Security: read-only root filesystem ───────────────────────────────
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false   # False because uvicorn writes .pyc
+          capabilities:
+            drop: ["ALL"]

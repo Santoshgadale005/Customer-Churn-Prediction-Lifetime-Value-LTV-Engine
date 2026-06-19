@@ -2,13 +2,13 @@ groups:
   - name: api_alerts
     rules:
       - alert: HighLatency
-        expr: histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[5m])) by (le)) > 3
+        expr: histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[5m])) by (le)) > 0.5
         for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "FastAPI p95 latency is above 3 seconds"
-          description: "The 95th percentile API latency has stayed above 3 seconds for at least 2 minutes."
+          summary: "FastAPI p95 latency is above 500ms"
+          description: "The 95th percentile API latency has stayed above 500ms for at least 2 minutes."
 
       - alert: HighErrorRate
         expr: sum(rate(api_errors_total[5m])) / clamp_min(sum(rate(api_requests_total[5m])), 1) > 0.05
@@ -45,3 +45,41 @@ groups:
         annotations:
           summary: "Prediction cache errors detected"
           description: "The FastAPI service reported Redis cache errors during the last 5 minutes."
+
+  - name: mlops_alerts
+    rules:
+      - alert: DataDriftDetected
+        expr: drift_features_detected_total >= 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Data drift detected in production features"
+          description: "The KS test detected drift in 2+ monitored features. Retraining recommended."
+
+      - alert: ModelF1ScoreDegraded
+        expr: model_f1_score_current < 0.70
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model F1 score dropped below 0.70 threshold"
+          description: "The deployed churn model F1 score fell below the retraining threshold."
+
+      - alert: ModelAccuracyDegraded
+        expr: model_accuracy_current < 0.75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model accuracy below 75%"
+          description: "Churn model accuracy dropped below the production quality threshold."
+
+      - alert: HighChurnRateAnomaly
+        expr: churn_rate_current > 0.60
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusually high churn prediction rate detected"
+          description: "More than 60% of recent predictions indicate churn. May signal model drift."
