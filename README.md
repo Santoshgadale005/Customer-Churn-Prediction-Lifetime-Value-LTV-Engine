@@ -1,399 +1,301 @@
-# Customer Churn Prediction & Customer Lifetime Value Engine
+# Customer Churn Prediction & LTV Engine
+## 30-Day Enterprise MLOps Capstone Project
 
-## Project Overview
+**A production-grade machine learning platform** built over 30 days, demonstrating the complete lifecycle of an enterprise ML system — from raw data to cloud deployment with automated monitoring, drift detection, and self-healing retraining pipelines.
 
-This project is an end-to-end predictive analytics platform for telecom and subscription businesses. It predicts which customers are likely to churn, estimates customer lifetime value (LTV), explains model behavior with SHAP, logs predictions to PostgreSQL, and exposes the results through FastAPI and dashboard-ready analytics views.
+---
 
-In interview language: this is a production-style ML system with offline training, online inference, persistent prediction logging, explainability, Dockerized deployment, and CI/CD validation.
+## 🏗️ Complete System Architecture
 
-## Architecture
-
-![Architecture](docs/architecture.png)
-
-Customer data flows into PostgreSQL, is transformed through preprocessing and feature engineering, then served through churn and LTV models. FastAPI returns predictions and recommendations while PostgreSQL stores prediction history for dashboards and monitoring.
-
-## Features
-
-- Churn classification using Logistic Regression, Random Forest, and XGBoost
-- LTV regression model for revenue prioritization
-- SHAP explainability for model transparency
-- FastAPI inference API with versioned endpoints
-- JWT authentication and role-based access control
-- PostgreSQL prediction logging with timestamps
-- Metabase-ready dashboard layer
-- Docker and Docker Compose deployment
-- Prometheus, Grafana, and cAdvisor production monitoring
-- Redis prediction caching and database query optimization
-- GitHub Actions CI/CD workflows
-- Pytest API and model checks
-
-## Tech Stack
-
-- Python
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- Pandas and NumPy
-- Scikit-learn
-- XGBoost
-- SHAP
-- MLflow (Experiment Tracking & Model Registry)
-- Apache Airflow (Workflow Orchestration)
-- Docker, Docker Compose, and Kubernetes
-- Metabase
-- Prometheus
-- Grafana
-- cAdvisor
-- Redis
-- GitHub Actions
-- Pytest
-
-## Project Structure
-
-```text
-customer-churn-ltv/
-├── app/
-│   ├── api/
-│   ├── database/
-│   ├── models/
-│   ├── model_registry/
-│   ├── services/
-│   └── utils/
-├── dashboards/
-├── data/
-├── docs/
-│   └── screenshots/
-├── reports/
-├── tests/
-├── docker/
-├── .github/
-│   └── workflows/
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-├── README.md
-└── app/main.py
+```
+Customer Data (Telco CSV / API)
+          │
+          ▼
+   PostgreSQL Database
+          │
+          ▼
+   Data Preprocessing
+   Feature Engineering
+          │
+     ┌────┴────┐
+     ▼         ▼
+ XGBoost    LTV Random
+  Churn      Forest
+  Model      Model
+     └────┬────┘
+          │
+          ▼
+       SHAP
+  Explainability
+          │
+          ▼
+      FastAPI
+   (JWT + RBAC)
+          │
+     ┌────┴────┐
+     ▼         ▼
+  Redis      PostgreSQL
+  Cache    Prediction Logs
+          │
+     ┌────┴────┐
+     ▼         ▼
+Metabase    Prometheus
+Dashboard    + Grafana
+          │
+     ┌────┴────────┐
+     ▼             ▼
+  Docker/      AWS EC2
+Kubernetes      + RDS
+          │
+          ▼
+   MLOps Platform
+  Drift Detection (KS Test)
+  Automated Retraining
+  MLflow Registry
+  Airflow Orchestration
 ```
 
-## Setup Guide
+---
 
-Create and activate a virtual environment:
+## ✨ Key Features
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+### Machine Learning
+- Churn classification: Logistic Regression, Random Forest, XGBoost
+- LTV regression: Random Forest Regressor
+- SHAP explainability for every prediction
+- MLflow experiment tracking and model registry
 
-Run the API locally:
+### API & Backend
+- FastAPI with versioned endpoints (`/api/v1/`)
+- JWT authentication + role-based access control (admin/user)
+- Redis prediction caching (96% latency reduction)
+- Batch prediction endpoint
+- SHAP explanation endpoint
 
-```bash
-uvicorn app.main:app --reload
-```
+### MLOps (Days 21–28)
+- **Drift Detection**: Kolmogorov–Smirnov test across 5 production features
+- **Automated Retraining**: Triggered when drift ≥ 2 features or F1 < 0.70
+- **MLflow Model Registry**: Staging → Production → Archived lifecycle
+- **Apache Airflow DAG**: Daily drift monitoring and conditional retraining
+- **Production Prediction Logging**: Full audit trail of every prediction
 
-Run with Docker:
+### Infrastructure
+- **Docker + Docker Compose**: Full local stack in one command
+- **Kubernetes**: Multi-replica, HPA auto-scaling (2–5 pods), self-healing
+- **AWS Deployment**: EC2 + RDS + Nginx reverse proxy
+- **Multi-Stage Dockerfile**: ~5x image size reduction
 
-```bash
-docker-compose up --build
-```
+### Monitoring (Days 20–29)
+- **Prometheus**: 15+ custom metrics (requests, latency, cache, churn rate, drift, model F1)
+- **Grafana**: 2 dashboards (Customer Intelligence + MLOps Drift & Retraining)
+- **Alert Rules**: High latency, error rate, API down, drift detected, model degradation
+- **Structured JSON Logging**: Loki/ELK-compatible output
 
-### Container Orchestration: Kubernetes
+---
 
-Deploy the system to a local Kubernetes cluster (Docker Desktop or Minikube) for container orchestration, high availability, rolling updates, and self-healing.
-
-All manifests are located in the `k8s/` directory.
-
-#### Prerequisites
-- Active local Kubernetes cluster (Docker Desktop K8s or Minikube)
-- `kubectl` CLI installed
-
-#### Deployment Steps
-1. **Build the local Docker image**:
-   ```bash
-   docker build -t churn-api:latest .
-   ```
-2. **Apply the Kubernetes configurations**:
-   ```bash
-   kubectl apply -f k8s/
-   ```
-3. **Verify all components are running**:
-   ```bash
-   kubectl get all
-   ```
-
-#### Accessing the application
-- FastAPI docs (Kubernetes): `http://localhost:30080/docs`
-- Health check (Kubernetes): `http://localhost:30080/health`
-
-#### Orchestration Features Demonstrated
-- **Self-Healing**: If a pod crashes or is deleted, Kubernetes automatically launches a new one.
-  ```bash
-  kubectl delete pod <pod-name>
-  kubectl get pods
-  ```
-- **Horizontal Scaling**: Scale the API to handle more traffic:
-  ```bash
-  kubectl scale deployment churn-api --replicas=4
-  kubectl get pods
-  ```
-- **Rolling Updates**: Update components with zero downtime:
-  ```bash
-  # Tag your local image as v2
-  docker tag churn-api:latest churn-api:v2
-  # Perform rolling update
-  kubectl set image deployment/churn-api churn-api=churn-api:v2
-  # Track status
-  kubectl rollout status deployment/churn-api
-  ```
-
-#### Kubernetes Screenshots
-
-##### Deployment Output
-![Kubernetes Deployment](docs/screenshots/k8s_deployment.png)
-
-##### Horizontal Scaling Output
-![Kubernetes Scaling](docs/screenshots/k8s_scaling.png)
-
-### Cloud Deployment: Amazon Web Services (AWS)
-
-Deploy the system as a cloud-hosted predictive analytics platform using AWS EC2, AWS RDS PostgreSQL, Nginx, and Metabase.
-
-#### Architecture Overview
-- **AWS Route 53 & Nginx Reverse Proxy**: External traffic on ports 80/443 is securely routed through Route 53 to an Nginx container running on an EC2 instance. Nginx handles proxying to the application or dashboard and provides basic security headers.
-- **FastAPI Application (EC2)**: Runs inside a Docker container on the EC2 host.
-- **Redis (EC2)**: A caching container facilitating low-latency predictions.
-- **Metabase (EC2)**: A dashboard analytics container exposing customer reports.
-- **Amazon RDS (PostgreSQL)**: Managed database instance running Multi-AZ PostgreSQL for secure, persistent data logging.
-
-#### Cloud Architecture Diagram
-![AWS Deployment Architecture](docs/screenshots/aws_deployment_architecture.png)
-
-#### Prerequisites
-- Active AWS Account
-- EC2 Instance launched (Ubuntu 22.04 LTS, `t2.micro` or `t3.medium`)
-- Managed RDS PostgreSQL database (`db.t3.micro` recommended)
-
-#### Security Group Configuration
-Allow the following ports in your Security Group rules:
-- **Port 22**: SSH access (restricted to your IP)
-- **Port 80**: HTTP web traffic (open to all)
-- **Port 443**: HTTPS web traffic (open to all)
-- **Port 8000**: Optional direct API access (restricted/closed if proxied by Nginx)
-- **Port 3000**: Metabase Dashboard (restricted/closed if proxied by Nginx)
-
-Ensure your RDS database security group allows inbound PostgreSQL traffic (Port 5432) **only** from your EC2 instance's security group.
-
-#### Automated Deployment Steps
-1. **Connect to EC2**:
-   ```bash
-   ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
-   ```
-2. **Transfer project files and setup production environment configuration**:
-   ```bash
-   # Create production .env based on the template
-   cp .env.production.example .env
-   # Edit with your RDS endpoint and security credentials
-   nano .env
-   ```
-3. **Execute the AWS Deployment Script**:
-   ```bash
-   chmod +x scripts/deploy_aws.sh
-   ./scripts/deploy_aws.sh
-   ```
-4. **Access Cloud Endpoints**:
-   - **FastAPI API Docs**: `http://YOUR_EC2_PUBLIC_IP/docs`
-   - **Metabase Dashboard Console**: `http://YOUR_EC2_PUBLIC_IP/dashboard/`
-
-Open:
-
-- FastAPI docs (Docker Compose): `http://localhost:8000/docs`
-- Health check (Docker Compose): `http://localhost:8000/health`
-- Metabase dashboard: `http://localhost:3000`
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3001`
-- cAdvisor: `http://localhost:8081`
-- Redis: `localhost:6379`
-- Redis Exporter: `http://localhost:9121/metrics`
-
-## API Endpoints
-
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/health` | Service health check |
-| GET | `/metrics` | Prometheus metrics scrape endpoint |
-| GET | `/metrics/summary` | JSON monitoring summary |
-| GET | `/api/v1/cache/status` | Redis cache health and configuration; admin only |
-| DELETE | `/api/v1/cache` | Invalidate prediction cache; admin only |
-| POST | `/register` | Create a user account |
-| POST | `/login` | Login and receive a JWT bearer token |
-| POST | `/api/v1/predict` | Generate churn, LTV, segment, and recommendation |
-| POST | `/api/v1/predict/explain` | Generate churn prediction with SHAP explanation |
-| POST | `/api/v1/predict/batch` | Generate batch churn predictions |
-| GET | `/api/v1/predict/feature-importance` | Return model feature importance |
-| GET | `/api/v1/model-info` | Return deployed model metadata; admin only |
-| GET | `/admin/users` | List users; admin only |
-
-## Authentication
-
-Register a user:
-
-```bash
-curl -X POST http://localhost:8000/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"santosh","email":"test@email.com","password":"password123"}'
-```
-
-Login:
-
-```bash
-curl -X POST http://localhost:8000/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"santosh","password":"password123"}'
-```
-
-Use the returned token with protected APIs:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/predict \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @sample_request.json
-```
-
-Example model-info response:
-
-```json
-{
-  "model_name": "xgboost_churn_model",
-  "version": "v1",
-  "accuracy": 0.791
-}
-```
-
-## Dashboard Screenshots
-
-### Airflow DAG Dashboard
-![Airflow DAG Dashboard](docs/screenshots/airflow_dashboard.png)
-
-### MLflow Dashboard
-![MLflow Dashboard](docs/screenshots/mlflow_dashboard.png)
-
-### KPI Dashboard
-![KPI Dashboard](docs/screenshots/kpi_dashboard.png)
-
-### Revenue-at-Risk Dashboard
-![Revenue at Risk Dashboard](docs/screenshots/revenue_at_risk_dashboard.png)
-
-### Customer Segments Dashboard
-![Customer Segments Dashboard](docs/screenshots/customer_segments_dashboard.png)
-
-### Retention Priority Dashboard
-![Retention Priority Dashboard](docs/screenshots/retention_priority_dashboard.png)
-
-## Results
-
-Detailed metrics are documented in [reports/final_results.md](reports/final_results.md).
+## 📊 Model Results
 
 | Model | Metric | Value |
-|---|---:|---:|
+|-------|--------|------:|
 | XGBoost Churn | Accuracy | 0.791 |
 | XGBoost Churn | Precision | 0.633 |
 | XGBoost Churn | Recall | 0.508 |
 | XGBoost Churn | F1 Score | 0.564 |
 | LTV Model | MAE | 1.089 |
 | LTV Model | RMSE | 1.995 |
-| LTV Model | R2 | 0.999999 |
+| LTV Model | R² | 0.9999 |
 
-## Business Value
+---
 
-The system helps a business identify customers likely to leave, estimate revenue impact, prioritize high-value retention actions, and give non-technical teams dashboard visibility into customer risk. Instead of treating every customer the same, teams can focus incentives and outreach where they protect the most revenue.
+## 🔌 API Endpoints
 
-## Resume Bullet Points
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| GET | `/health` | None | Service health check |
+| GET | `/metrics` | None | Prometheus scrape endpoint |
+| POST | `/register` | None | Create user account |
+| POST | `/login` | None | JWT token |
+| POST | `/api/v1/predict` | User | Single churn + LTV prediction |
+| POST | `/api/v1/predict/explain` | User | SHAP explanation |
+| POST | `/api/v1/predict/batch` | User | Batch predictions |
+| GET | `/api/v1/predict/feature-importance` | User | Model feature importance |
+| GET | `/api/v1/mlops/drift` | User | Live drift detection |
+| GET | `/api/v1/mlops/status` | User | MLOps platform status |
+| POST | `/api/v1/mlops/retrain` | Admin | Trigger retraining |
+| GET | `/api/v1/mlops/retrain/history` | User | Retraining audit log |
+| GET | `/api/v1/model-info` | Admin | Model metadata |
+| DELETE | `/api/v1/cache` | Admin | Invalidate prediction cache |
 
-- Built an end-to-end Customer Churn Prediction and Lifetime Value Engine using FastAPI, PostgreSQL, XGBoost, SHAP, Docker, and Metabase.
-- Deployed the prediction engine to AWS, provisioning EC2 instances for containerized FastAPI, Redis, and Metabase microservices, and Amazon RDS for managed, Multi-AZ PostgreSQL data persistence.
-- Configured a secure production networking layer on AWS using custom Security Groups, environment-based secrets management, and Nginx as a reverse proxy/SSL termination gateway.
-- Evolved the architecture into a cloud-native platform by deploying FastAPI, PostgreSQL, and Redis to a Kubernetes cluster with multi-replica configurations, NodePort services, Persistent Volume Claims (PVCs), and ConfigMaps/Secrets.
-- Implemented enterprise-grade orchestration capabilities, demonstrating self-healing (automatic pod recreation), horizontal scaling, and zero-downtime rolling updates.
-- Developed dual machine-learning pipelines for churn classification and customer lifetime value prediction.
-- Implemented REST APIs, CI/CD pipelines, Dockerized deployment, explainable AI, and executive analytics dashboards.
+---
 
-## Monitoring
+## ⚡ Performance
 
-The project includes a production monitoring stack:
+| Metric | Value |
+|--------|-------|
+| Cold prediction latency | 70.82 ms |
+| Cached prediction latency | 2.82 ms |
+| Cache latency reduction | **96.01%** |
+| p95 latency at 100 users | ~380 ms |
+| Max throughput | ~210 req/sec |
+| Cache TTL | 3,600 seconds |
 
-- FastAPI exports Prometheus metrics at `/metrics`
-- Prometheus scrapes FastAPI and cAdvisor every 15 seconds
-- Grafana is provisioned with the `Customer Intelligence Monitoring` dashboard
-- cAdvisor exposes container CPU, memory, filesystem, and uptime metrics
-- Prometheus alert rules cover high latency, high error rate, and API downtime
+---
 
-Monitoring URLs:
+## 🚀 Quick Start
 
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3001`
-- cAdvisor: `http://localhost:8081`
+```bash
+# 1. Clone and set up
+git clone https://github.com/Santoshgadale005/Customer-Churn-Prediction-Lifetime-Value-LTV-Engine
+cd Customer-Churn-Prediction-Lifetime-Value-LTV-Engine
 
-Useful Prometheus queries:
+# 2. Create virtual environment
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-```promql
-prediction_requests_total
-sum(rate(api_requests_total[5m])) by (endpoint)
-histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket[5m])) by (le))
-time() - container_start_time_seconds
+# 3. Run locally
+uvicorn app.main:app --reload
+
+# 4. Full stack (Docker Compose)
+docker-compose up --build
+
+# 5. Generate production test data and run drift detection
+python scripts/generate_production_data.py
+python app/services/drift_detection.py
 ```
 
-Default Grafana login:
+**Access Points (Docker Compose):**
+- FastAPI Docs: http://localhost:8000/docs
+- Metabase: http://localhost:3000
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3001 (admin/admin)
+- Airflow: http://localhost:8080
 
-```text
-admin / admin
+---
+
+## ☸️ Kubernetes Deployment
+
+```bash
+docker build -t churn-api:latest .
+kubectl apply -f k8s/
+kubectl get all
+# Access: http://localhost:30080/docs
 ```
 
-## Performance Optimization
+**K8s Features:**
+- 2–5 auto-scaling replicas (HPA: CPU 70%, Memory 80%)
+- Liveness + Readiness probes on `/health`
+- Zero-downtime rolling updates
+- PodDisruptionBudget: minimum 1 replica always available
+- NetworkPolicy: least-privilege port access
 
-Prediction responses are cached in Redis using deterministic SHA-256 keys generated from sorted customer input. Cache keys include a model cache version, allowing deployments to invalidate old predictions when a model changes.
+---
 
-- Cache TTL: 3,600 seconds
-- Redis eviction policy: `allkeys-lru`
-- Redis memory limit: 256 MB
-- Cache failures fall back to normal model inference
-- Admin invalidation endpoint: `DELETE /api/v1/cache`
-- Redis metrics are collected through Redis Exporter
+## ☁️ AWS Cloud Deployment
 
-Measured locally with `scripts/benchmark_cache.py`:
+```bash
+ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
+chmod +x scripts/deploy_aws.sh && ./scripts/deploy_aws.sh
+```
 
-| Request | Latency |
-|---|---:|
-| Cold model prediction | 70.82 ms |
-| Warm cached prediction average | 2.82 ms |
-| Latency reduction | 96.01% |
+**Architecture:** EC2 (FastAPI + Redis + Metabase) + RDS PostgreSQL (Multi-AZ) + Nginx reverse proxy
 
-PostgreSQL indexes optimize dashboard filters and ordering on:
+---
 
-- `churn_probability`
-- `customer_segment`
-- `created_at`
-- `user_id`
+## 🔁 MLOps Lifecycle
 
-Dashboard SQL selects only required columns instead of using `SELECT *`.
+```
+Train Model → Deploy → Monitor → Detect Drift → Retrain → Redeploy
+     │                                              │
+     └──────────────────────────────────────────────┘
+              MLflow Model Registry governs every transition
+```
 
-## Future Improvements
+**Automated daily Airflow DAG**: `drift_monitoring_pipeline`
+1. Collect production data
+2. KS-test drift detection (5 features)
+3. Evaluate model performance (F1, Accuracy)
+4. ShortCircuit gate: retrain only if needed
+5. Compare old vs. new model
+6. Promote if improved → MLflow Production
+7. Send alert
 
-- Add alert notification channels such as email, Slack, or PagerDuty
-- Add distributed tracing with OpenTelemetry
-- Add Alembic migrations for database schema changes
-- Export Metabase dashboard definitions as version-controlled assets
-- Add batch CSV upload endpoint for business users
+---
 
+## 🧪 Testing
 
-## Project Maintenance
+```bash
+# Unit and API tests
+pytest tests/ -v
 
-- Reviewed deployment documentation
-- Verified monitoring setup
-- Updated contributor notes
+# Load testing (50 users)
+locust -f scripts/load_test.py --host http://localhost:8000 \
+       --headless --users 50 --spawn-rate 10 --run-time 60s
 
-## Architecture
-## Team Members
-## Deployment Guide
-## Monitoring Stack
-## Future Enhancements
+# Drift detection
+python app/services/drift_detection.py
+
+# Database backup
+python scripts/db_backup.py
+```
+
+---
+
+## 📁 Project Structure
+
+```
+customer-churn-ltv/
+├── app/
+│   ├── api/          # FastAPI routes (predict, auth, cache, mlops, health)
+│   ├── database/     # SQLAlchemy models, indexes, connection
+│   ├── models/       # ML models + retraining script
+│   ├── services/     # Prediction, preprocessing, drift detection, performance monitor
+│   └── utils/        # Redis cache, Prometheus metrics
+├── airflow/dags/     # ETL pipeline + drift monitoring DAG
+├── data/             # Training + production datasets
+├── docs/             # Architecture diagrams, disaster recovery guide
+├── k8s/              # Kubernetes manifests (deployment, HPA, secrets, network policy)
+├── monitoring/       # Grafana dashboards, Prometheus alert rules
+├── nginx/            # Nginx reverse proxy config
+├── reports/          # Model results, drift reports, retrain logs
+├── scripts/          # Load tests, backup, benchmarks, deployment
+├── tests/            # Pytest API and model tests
+├── Dockerfile        # Multi-stage production build
+└── docker-compose.yml
+```
+
+---
+
+## 🎯 Business Value
+
+This system enables businesses to:
+1. **Identify at-risk customers** before they leave
+2. **Prioritize by revenue impact** using LTV estimates
+3. **Understand WHY** a customer is flagged (SHAP explanations)
+4. **Give non-technical teams** dashboard visibility
+5. **Automatically adapt** when customer behavior changes (drift detection + retraining)
+
+> "Instead of treating every customer the same, teams can focus incentives and outreach where they protect the most revenue."
+
+---
+
+## 📈 Tech Stack
+
+Python · FastAPI · PostgreSQL · SQLAlchemy · XGBoost · Scikit-learn · SHAP · MLflow · Apache Airflow · Docker · Kubernetes · AWS (EC2 + RDS) · Nginx · Prometheus · Grafana · Redis · GitHub Actions · Pytest · Locust · SciPy
+
+---
+
+## 🔮 Future Improvements
+
+- Real-time streaming with Apache Kafka
+- Distributed tracing with OpenTelemetry
+- Alembic database migrations
+- Batch CSV upload endpoint for business analysts
+- A/B model testing framework
+- Advanced recommender system for retention offers
+- SMS/Email/Slack alert notification channels
+
+---
+
+## 📝 License
+
+MIT License — see LICENSE for details.
