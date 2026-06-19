@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-06-19T12:05:54.696843",
+  "status": "no_labels",
+  "prediction_distribution": {
+    "total_predictions": 500,
+    "predicted_churn_rate": 0.134,
+    "predicted_churn_count": 67
+  },
+  "performance_metrics": null,
+  "retraining_decision": {
+    "should_retrain": false,
+    "reasons": [],
+    "f1_threshold": 0.7,
+    "accuracy_threshold": 0.75,
+    "drift_feature_threshold": 2
+  }
+}

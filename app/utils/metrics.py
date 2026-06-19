@@ -68,3 +68,37 @@ cache_hit_rate = Gauge(
     "prediction_cache_hit_rate",
     "Current prediction cache hit rate",
 )
+
+# ── Day 28: MLOps Drift & Retraining Metrics ────────────────────────────────
+
+drift_features_detected = Gauge(
+    "drift_features_detected_total",
+    "Number of features with statistically significant data drift (KS test p < 0.05)",
+)
+
+drift_ks_statistic = Gauge(
+    "drift_ks_statistic",
+    "KS statistic for the most recently drifted feature (0 = identical, 1 = max drift)",
+    ["feature"],
+)
+
+model_retraining_total = Counter(
+    "model_retraining_total",
+    "Total number of model retraining runs triggered",
+    ["trigger_reason"],
+)
+
+model_deployed_total = Counter(
+    "model_deployed_total",
+    "Total number of times a retrained model was promoted to Production",
+)
+
+model_f1_score_gauge = Gauge(
+    "model_f1_score_current",
+    "Current deployed model F1 score (from most recent evaluation)",
+)
+
+model_accuracy_gauge = Gauge(
+    "model_accuracy_current",
+    "Current deployed model accuracy (from most recent evaluation)",
+)

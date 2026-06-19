@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-06-19T12:05:23.705982",
+  "status": "drift_detected",
+  "total_features_checked": 5,
+  "features_with_drift": 3,
+  "drifted_features": [
+    "MonthlyCharges",
+    "TotalCharges",
+    "RevenuePerMonth"
+  ],
+  "recommend_retraining": true,
+  "drift_threshold": 0.05,
+  "retraining_trigger_threshold": 2,
+  "feature_results": [
+    {
+      "feature": "tenure",
+      "ks_statistic": 0.049611,
+      "p_value": 0.193808,
+      "drift_detected": false,
+      "severity": "none",
+      "train_mean": 32.4218,
+      "prod_mean": 34.454,
+      "train_std": 24.5453,
+      "prod_std": 24.5229
+    },
+    {
+      "feature": "MonthlyCharges",
+      "ks_statistic": 0.369777,
+      "p_value": 0.0,
+      "drift_detected": true,
+      "severity": "high",
+      "train_mean": 64.7982,
+      "prod_mean": 89.0258,
+      "train_std": 30.086,
+      "prod_std": 40.5916
+    },
+    {
+      "feature": "TotalCharges",
+      "ks_statistic": 0.122168,
+      "p_value": 2e-06,
+      "drift_detected": true,
+      "severity": "medium",
+      "train_mean": 2283.3004,
+      "prod_mean": 3201.7636,
+      "train_std": 2266.7714,
+      "prod_std": 3041.8801
+    },
+    {
+      "feature": "RevenuePerMonth",
+      "ks_statistic": 0.338997,
+      "p_value": 0.0,
+      "drift_detected": true,
+      "severity": "high",
+      "train_mean": 59.0831,
+      "prod_mean": 85.5917,
+      "train_std": 30.5144,
+      "prod_std": 39.2259
+    },
+    {
+      "feature": "EngagementScore",
+      "ks_statistic": 0.048151,
+      "p_value": 0.221573,
+      "drift_detected": false,
+      "severity": "none",
+      "train_mean": 2283.1472,
+      "prod_mean": 2459.6761,
+      "train_std": 2264.7033,
+      "prod_std": 2332.395
+    }
+  ]
+}

@@ -7,6 +7,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from app.api.auth import router as auth_router
 from app.api.cache import router as cache_router
 from app.api.health import router as health_router
+from app.api.mlops import router as mlops_router
 from app.api.predict import router as predict_router
 from app.database.database import Base, engine
 from app.database.indexes import ensure_prediction_indexes
@@ -23,6 +24,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(cache_router)
 app.include_router(predict_router)
+app.include_router(mlops_router)
 
 
 @app.middleware("http")
